@@ -1,0 +1,2 @@
+postfix postfix/main_mailer_type string Internet site+
+postfix postfix/mailname string mail.domain.tld
