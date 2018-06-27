@@ -18,9 +18,6 @@ RUN echo "postfix postfix/main_mailer_type string Internet site" > postfix_silen
 RUN apt-get update
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -q -y \
  postfix \
- dovecot-common \
- dovecot-imapd \
- dovecot-pop3d \
  opendkim \
  opendkim-tools \
  ntpdate \
@@ -53,10 +50,8 @@ RUN postconf -e "myhostname = mail.${DomainName}" \
  && postconf -e smtpd_milters=unix:/var/run/opendkim/opendkim.sock \
  && postconf -e non_smtpd_milters=unix:/var/run/opendkim/opendkim.sock
 
-# Настройка Dovecot, файл настройки подгружаем уже настроеный.
-ADD dovecot.conf /etc/dovecot/dovecot.conf
-RUN service postfix stop ; service dovecot stop ; service opendkim stop
+RUN service postfix stop ; service opendkim stop
 EXPOSE 25 143 110
 
-# стартуем postfix и dovecot, а так же логирование
-CMD ["sh", "-c", "service postfix start ; service dovecot start ; service opendkim start ; service rsyslog start ; tail -f /dev/null"]
+# стартуем postfix и логирование
+CMD ["sh", "-c", "service postfix start ; service opendkim start ; service rsyslog start ; tail -f /dev/null"]
