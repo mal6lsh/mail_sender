@@ -26,7 +26,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get install -q -y \
  ntpdate \
  rsyslog
 
-# Dkim + ключи подписи + чью почту подписывать
+# Dkim + ключи подписи + какую почту подписывать
 RUN mkdir /etc/opendkim/ \
  && opendkim-genkey -D /etc/opendkim/ -d $(hostname -d) -s $(hostname) \
  && chgrp opendkim /etc/opendkim/* \
@@ -38,7 +38,7 @@ ADD opendkim.conf /etc/opendkim.conf
 RUN echo $(hostname -f | sed s/\\./._domainkey./) $(hostname -d):$(hostname):$(ls /etc/opendkim/*.private) | tee -a /etc/opendkim/keytable \
  && echo $(hostname -d) $(hostname -f | sed s/\\./._domainkey./) | tee -a /etc/opendkim/signingtable
 
-# Создаем пользователя с его паролем и группы рассылки
+# Создаем пользователя с его паролем и группы
 RUN useradd -m -d /home/${UserName} -p ${UserPass} -s /bin/false ${UserName} \
  && echo "root: ${UserName}" >> /etc/aliases \
  && newaliases
