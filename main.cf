@@ -1,17 +1,39 @@
-smtpd_banner = $myhostname ESMTP $mail_name (ubuntu/GNU)
+smtpd_banner = $myhostname ESMTP $mail_name (debian/GNU)
 biff = no
 append_dot_mydomain = no
 
 readme_directory = no
 
-# TLS parameters
+# TLS parameters защита соединения
 smtpd_tls_cert_file=/etc/ssl/certs/ssl-cert-snakeoil.pem
 smtpd_tls_key_file=/etc/ssl/private/ssl-cert-snakeoil.key
 smtpd_tls_session_cache_database = btree:${data_directory}/smtpd_scache
 smtp_tls_session_cache_database = btree:${data_directory}/smtp_scache
 smtpd_tls_security_level = may
 
-smtpd_relay_restrictions = permit_mynetworks permit_sasl_authenticated defer_unauth_destination
+# коды возврата
+strict_rfc821_envelopes = yes
+relay_domains_reject_code = 554
+unknown_address_reject_code = 554
+unknown_client_reject_code = 554
+unknown_hostname_reject_code = 554
+unknown_local_recipient_reject_code = 554
+unknown_relay_recipient_reject_code = 554
+unverified_recipient_reject_code = 554
+
+# проверка в стоп-листах
+smtpd_relay_restrictions =
+permit_mynetworks,
+permit_sasl_authenticated,
+defer_unauth_destination,
+reject_rbl_client dsn.rfc-ignorant.org,
+reject_rbl_client dul.dnsbl.sorbs.net,
+reject_rbl_client list.dsbl.org,
+reject_rbl_client sbl-xbl.spamhaus.org,
+reject_rbl_client bl.spamcop.net,
+reject_rbl_client dnsbl.sorbs.net,
+permit
+
 myhostname = mail.$mydomain
 alias_maps = hash:/etc/aliases
 alias_database = hash:/etc/aliases
@@ -23,7 +45,7 @@ mailbox_size_limit = 0
 recipient_delimiter = +
 inet_interfaces = loopback-only
 
-#
+
 smtpd_sasl_auth_enable = yes
 smtpd_sasl_type = dovecot
 smtpd_sasl_path = private/auth
@@ -36,4 +58,3 @@ milter_default_action=accept
 milter_protocol=2
 smtpd_milters = inet:localhost:12301
 non_smtpd_milters = inet:localhost:12301
-
