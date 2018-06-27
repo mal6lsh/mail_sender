@@ -1,11 +1,10 @@
-FROM ubuntu:latest
+FROM debian:latest
 MAINTAINER Alex Sol <mal6lsh@gmail.com>
 
 ARG DomainName
 ARG UserName
 ARG UserPass
 
-# задаем имя сервера и домен
 RUN echo mail > /etc/hostname
 RUN echo "127.0.0.1 localhost mail mail.${DomainName}" > /etc/hosts \
  && chown root:root /etc/hosts
@@ -17,7 +16,7 @@ RUN echo "postfix postfix/main_mailer_type string Internet site" > postfix_silen
  && echo "postfix postfix/mailname string mail.${DomainName}" >> postfix_silent_install.txt \
  && debconf-set-selections postfix_silent_install.txt
 RUN apt-get update
-RUN UBUNTU_FRONTEND=noninteractive apt-get install -q -y \
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -q -y \
  postfix \
  dovecot-common \
  dovecot-imapd \
@@ -32,7 +31,7 @@ RUN mkdir /etc/opendkim/ \
  && opendkim-genkey -D /etc/opendkim/ -d $(hostname -d) -s $(hostname) \
  && chgrp opendkim /etc/opendkim/* \
  && chmod g+r /etc/opendkim/* \
- && gpasswd -a postfix opendkim 
+ && gpasswd -a postfix opendkim
 # && SOCKET="local:/var/run/opendkim/opendkim.sock"  \
 # && SOCKET="inet:12301@localhost"
 ADD opendkim.conf /etc/opendkim.conf
