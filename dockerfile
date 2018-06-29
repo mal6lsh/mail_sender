@@ -1,6 +1,8 @@
 FROM debian:latest
 MAINTAINER Alex Sol <mal6lsh@gmail.com>
 
+VOLUME /var/spool/postfix
+
 ARG DomainName
 ARG UserName
 ARG UserPass
@@ -20,7 +22,6 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get install -q -y \
  postfix \
  opendkim \
  opendkim-tools \
- ntpdate \
  rsyslog
 
 # Dkim + ключи подписи + какую почту подписывать
